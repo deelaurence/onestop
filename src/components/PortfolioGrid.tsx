@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { isReducedPerformance } from '../lib/performance';
 import heroImg from '../assets/hero.jpg';
 import weddingImg from '../assets/wedding.jpg';
 import galleryPortrait from '../assets/gallery_portrait.png';
@@ -99,6 +100,7 @@ export default function PortfolioGrid() {
   const columnRefs = useRef<(HTMLDivElement | null)[]>([]);
   const fogRefs = useRef<(HTMLDivElement | null)[]>([]);
   const bokehRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const reduced = isReducedPerformance();
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -144,40 +146,41 @@ export default function PortfolioGrid() {
       });
 
       // ── Cloud / fog layers parallax ──
-      const fogSpeeds = [-200, 150, -300, 250, -180];
-      fogRefs.current.forEach((fog, i) => {
-        if (!fog) return;
-        gsap.to(fog, {
-          y: fogSpeeds[i],
-          ease: 'none',
-          scrollTrigger: {
-            trigger: section,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: 0.6,
-          },
+      if (!reduced) {
+        const fogSpeeds = [-200, 150, -300, 250, -180];
+        fogRefs.current.forEach((fog, i) => {
+          if (!fog) return;
+          gsap.to(fog, {
+            y: fogSpeeds[i],
+            ease: 'none',
+            scrollTrigger: {
+              trigger: section,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: 0.6,
+            },
+          });
         });
-      });
 
-      // ── Bokeh circles parallax ──
-      bokehRefs.current.forEach((bokeh, i) => {
-        if (!bokeh) return;
-        gsap.to(bokeh, {
-          y: bokehCircles[i].speed,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: section,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: 0.5,
-          },
+        bokehRefs.current.forEach((bokeh, i) => {
+          if (!bokeh) return;
+          gsap.to(bokeh, {
+            y: bokehCircles[i].speed,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: section,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: 0.5,
+            },
+          });
         });
-      });
+      }
 
     }, section);
 
     return () => { ctx.revert(); };
-  }, []);
+  }, [reduced]);
 
   return (
     <section id="portfolio" className="parallax-portfolio" ref={sectionRef}>
@@ -188,34 +191,37 @@ export default function PortfolioGrid() {
       </div>
 
       {/* ── Cloud / fog layers ── */}
-      <div className="parallax-fog-container">
-        {[0, 1, 2, 3, 4].map((i) => (
-          <div
-            key={i}
-            className={`parallax-fog-layer parallax-fog-layer--${i}`}
-            ref={(el) => { fogRefs.current[i] = el; }}
-          />
-        ))}
-      </div>
+      {!reduced && (
+        <>
+          <div className="parallax-fog-container">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <div
+                key={i}
+                className={`parallax-fog-layer parallax-fog-layer--${i}`}
+                ref={(el) => { fogRefs.current[i] = el; }}
+              />
+            ))}
+          </div>
 
-      {/* ── Bokeh circles — blurred light spots ── */}
-      <div className="parallax-bokeh-container">
-        {bokehCircles.map((b, i) => (
-          <div
-            key={i}
-            className="parallax-bokeh-circle"
-            ref={(el) => { bokehRefs.current[i] = el; }}
-            style={{
-              left: b.x,
-              top: b.y,
-              width: b.size,
-              height: b.size,
-              opacity: b.opacity,
-              background: `radial-gradient(circle, ${b.color} 0%, transparent 70%)`,
-            }}
-          />
-        ))}
-      </div>
+          <div className="parallax-bokeh-container">
+            {bokehCircles.map((b, i) => (
+              <div
+                key={i}
+                className="parallax-bokeh-circle"
+                ref={(el) => { bokehRefs.current[i] = el; }}
+                style={{
+                  left: b.x,
+                  top: b.y,
+                  width: b.size,
+                  height: b.size,
+                  opacity: b.opacity,
+                  background: `radial-gradient(circle, ${b.color} 0%, transparent 70%)`,
+                }}
+              />
+            ))}
+          </div>
+        </>
+      )}
 
       {/* Top/bottom fog edges */}
       <div className="parallax-fog-edge parallax-fog-edge--top" />

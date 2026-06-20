@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { isReducedPerformance, prefersFinePointer } from '../lib/performance';
 
 import img1 from '../assets/hero.jpg';
 import img2 from '../assets/gallery_portrait.png';
@@ -130,50 +131,63 @@ export default function Hero() {
 
     }, section);
 
-    // ── Mouse-move parallax (subtle depth illusion, layered on top of scroll) ──
-    const mouseStrength = [10, 20, 32, 44];
-    let mouseX = 0;
-    let mouseY = 0;
-    let renderX = 0;
-    let renderY = 0;
+    const enableMouseParallax = prefersFinePointer() && !isReducedPerformance();
     let raf = 0;
     let running = true;
-
-    const onMouse = (e: MouseEvent) => {
-      const rect = section.getBoundingClientRect();
-      mouseX = (e.clientX - rect.left) / rect.width - 0.5;
-      mouseY = (e.clientY - rect.top) / rect.height - 0.5;
-    };
-    const onLeave = () => {
-      mouseX = 0;
-      mouseY = 0;
-    };
-
-    const tick = () => {
-      if (!running) return;
-      renderX += (mouseX - renderX) * 0.08;
-      renderY += (mouseY - renderY) * 0.08;
-      cards.forEach((card, i) => {
-        const ms = mouseStrength[i] ?? 8;
-        card.style.setProperty('--mx', `${(renderX * ms).toFixed(2)}px`);
-        card.style.setProperty('--my', `${(renderY * ms).toFixed(2)}px`);
-      });
-      raf = requestAnimationFrame(tick);
-    };
-
-    section.addEventListener('mousemove', onMouse);
-    section.addEventListener('mouseleave', onLeave);
-    raf = requestAnimationFrame(tick);
-
-    // Refresh ScrollTrigger after layout settles (images, fonts).
     const refreshTimer = window.setTimeout(() => ScrollTrigger.refresh(), 300);
+
+    if (enableMouseParallax) {
+      const mouseStrength = [10, 20, 32, 44];
+      let mouseX = 0;
+      let mouseY = 0;
+      let renderX = 0;
+      let renderY = 0;
+
+      const tick = () => {
+        if (!running) return;
+        renderX += (mouseX - renderX) * 0.08;
+        renderY += (mouseY - renderY) * 0.08;
+        cards.forEach((card, i) => {
+          const ms = mouseStrength[i] ?? 8;
+          card.style.setProperty('--mx', `${(renderX * ms).toFixed(2)}px`);
+          card.style.setProperty('--my', `${(renderY * ms).toFixed(2)}px`);
+        });
+
+        const settled =
+          Math.abs(mouseX - renderX) < 0.001 &&
+          Math.abs(mouseY - renderY) < 0.001;
+        raf = settled ? 0 : requestAnimationFrame(tick);
+      };
+
+      const onMouse = (e: MouseEvent) => {
+        const rect = section.getBoundingClientRect();
+        mouseX = (e.clientX - rect.left) / rect.width - 0.5;
+        mouseY = (e.clientY - rect.top) / rect.height - 0.5;
+        if (!raf) raf = requestAnimationFrame(tick);
+      };
+      const onLeave = () => {
+        mouseX = 0;
+        mouseY = 0;
+        if (!raf) raf = requestAnimationFrame(tick);
+      };
+
+      section.addEventListener('mousemove', onMouse, { passive: true });
+      section.addEventListener('mouseleave', onLeave);
+
+      return () => {
+        running = false;
+        cancelAnimationFrame(raf);
+        window.clearTimeout(refreshTimer);
+        section.removeEventListener('mousemove', onMouse);
+        section.removeEventListener('mouseleave', onLeave);
+        ctx.revert();
+      };
+    }
 
     return () => {
       running = false;
       cancelAnimationFrame(raf);
       window.clearTimeout(refreshTimer);
-      section.removeEventListener('mousemove', onMouse);
-      section.removeEventListener('mouseleave', onLeave);
       ctx.revert();
     };
   }, []);

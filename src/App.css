@@ -1721,3 +1721,84 @@
   background: var(--accent);
   border-radius: 10px;
 }
+
+/* ========================
+   PERFORMANCE — REDUCED TIER
+   ======================== */
+
+.darkroom-section--lite {
+  height: 280vh;
+}
+
+.darkroom-canvas-placeholder,
+.darkroom-fallback {
+  position: absolute;
+  inset: 0;
+  background: #080604;
+}
+
+.darkroom-fallback {
+  overflow: hidden;
+}
+
+.darkroom-fallback-frame {
+  position: absolute;
+  width: min(52vw, 320px);
+  margin: 0;
+  opacity: 0.2;
+  transform-origin: center center;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+.darkroom-fallback-frame img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 10px solid #0c0a08;
+  background: #f0ece6;
+  padding: 6px;
+}
+
+[data-perf="reduced"] .hero::before,
+[data-perf="reduced"] .hero::after,
+[data-perf="reduced"] .marquee-section::before,
+[data-perf="reduced"] .marquee-section::after,
+[data-perf="reduced"] .parallax-portfolio::before,
+[data-perf="reduced"] .parallax-portfolio::after,
+[data-perf="reduced"] .about-section::before,
+[data-perf="reduced"] .about-section::after,
+[data-perf="reduced"] .cta-section::before,
+[data-perf="reduced"] .cta-section::after,
+[data-perf="reduced"] .darkroom-viewport::before,
+[data-perf="reduced"] .darkroom-viewport::after {
+  display: none;
+}
+
+[data-perf="reduced"] .parallax-fog-layer,
+[data-perf="reduced"] .parallax-bokeh-circle,
+[data-perf="reduced"] .marquee-track {
+  animation: none !important;
+}
+
+[data-perf="reduced"] .parallax-fog-layer,
+[data-perf="reduced"] .parallax-bokeh-circle {
+  will-change: auto;
+}
+
+[data-paused="true"] .marquee-track,
+[data-paused="true"] .parallax-fog-layer,
+[data-paused="true"] .parallax-bokeh-circle,
+[data-paused="true"] .hero::before,
+[data-paused="true"] .hero::after,
+[data-paused="true"] .marquee-section::before,
+[data-paused="true"] .marquee-section::after,
+[data-paused="true"] .parallax-portfolio::before,
+[data-paused="true"] .parallax-portfolio::after,
+[data-paused="true"] .about-section::before,
+[data-paused="true"] .about-section::after,
+[data-paused="true"] .cta-section::before,
+[data-paused="true"] .cta-section::after,
+[data-paused="true"] .darkroom-viewport::before,
+[data-paused="true"] .darkroom-viewport::after {
+  animation-play-state: paused !important;
+}
