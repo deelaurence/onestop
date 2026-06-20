@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Canvas } from '@react-three/fiber';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import './App.css';
 
-import ThreeScene from './components/ThreeScene';
 import CustomCursor from './components/CustomCursor';
 import Preloader from './components/Preloader';
 import Navbar from './components/Navbar';
@@ -57,13 +55,6 @@ export default function App() {
       {!ready && <Preloader onDone={() => setReady(true)} />}
       <CustomCursor />
       <Navbar />
-
-      {/* 3D Camera — always fixed on screen */}
-      <div className="three-canvas-wrapper">
-        <Canvas dpr={[1, 2]} shadows>
-          <ThreeScene />
-        </Canvas>
-      </div>
 
       <main>
         <Hero />
