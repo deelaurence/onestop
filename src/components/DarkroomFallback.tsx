@@ -1,23 +1,28 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-import heroImg from '../assets/hero.jpg';
-import weddingImg from '../assets/wedding.jpg';
-import galleryPortrait from '../assets/gallery_portrait.png';
-import galleryWedding from '../assets/gallery_wedding.png';
-import galleryEvent from '../assets/gallery_event.png';
+import { PORTFOLIO_ITEMS } from '../data/portfolio';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const FRAMES = [
-  { src: heroImg, x: '-28%', y: '8%', rotate: -3, depth: 0 },
-  { src: galleryPortrait, x: '22%', y: '18%', rotate: 4, depth: 1 },
-  { src: weddingImg, x: '-18%', y: '32%', rotate: 2, depth: 2 },
-  { src: galleryEvent, x: '26%', y: '46%', rotate: -5, depth: 3 },
-  { src: galleryWedding, x: '-24%', y: '58%', rotate: 3, depth: 4 },
-  { src: heroImg, x: '16%', y: '70%', rotate: -2, depth: 5 },
-  { src: galleryPortrait, x: '-12%', y: '82%', rotate: 5, depth: 6 },
+  PORTFOLIO_ITEMS.find((i) => i.id === 'wedding-couple-embrace-forest-portrait'),
+  PORTFOLIO_ITEMS.find((i) => i.id === 'portrait-woman-formal-gele-lace-gown-full'),
+  PORTFOLIO_ITEMS.find((i) => i.id === 'wedding-ceremony-outdoor-arch-officiant'),
+  PORTFOLIO_ITEMS.find((i) => i.id === 'school-panorama-students-staff-turf'),
+  PORTFOLIO_ITEMS.find((i) => i.id === 'studio-portrait-couple-lift-playful'),
+  PORTFOLIO_ITEMS.find((i) => i.id === 'commercial-food-jollof-rice-chicken'),
+  PORTFOLIO_ITEMS.find((i) => i.id === 'wedding-reception-first-dance'),
+].filter(Boolean) as typeof PORTFOLIO_ITEMS;
+
+const FRAME_LAYOUT = [
+  { x: '-28%', y: '8%', rotate: -3 },
+  { x: '22%', y: '18%', rotate: 4 },
+  { x: '-18%', y: '32%', rotate: 2 },
+  { x: '26%', y: '46%', rotate: -5 },
+  { x: '-24%', y: '58%', rotate: 3 },
+  { x: '16%', y: '70%', rotate: -2 },
+  { x: '-12%', y: '82%', rotate: 5 },
 ];
 
 export default function DarkroomFallback() {
@@ -30,7 +35,6 @@ export default function DarkroomFallback() {
 
     const ctx = gsap.context(() => {
       frames.forEach((frame, i) => {
-        const depth = FRAMES[i]?.depth ?? i;
         gsap.fromTo(
           frame,
           { opacity: 0.15, scale: 0.82 },
@@ -40,8 +44,8 @@ export default function DarkroomFallback() {
             ease: 'none',
             scrollTrigger: {
               trigger: section,
-              start: `top+=${depth * 12}% top`,
-              end: `top+=${depth * 12 + 28}% top`,
+              start: `top+=${i * 12}% top`,
+              end: `top+=${i * 12 + 28}% top`,
               scrub: 1.5,
             },
           }
@@ -52,8 +56,8 @@ export default function DarkroomFallback() {
           ease: 'none',
           scrollTrigger: {
             trigger: section,
-            start: `top+=${depth * 12 + 30}% top`,
-            end: `top+=${depth * 12 + 50}% top`,
+            start: `top+=${i * 12 + 30}% top`,
+            end: `top+=${i * 12 + 50}% top`,
             scrub: 1.5,
           },
         });
@@ -65,19 +69,22 @@ export default function DarkroomFallback() {
 
   return (
     <div className="darkroom-fallback" ref={containerRef} aria-hidden="true">
-      {FRAMES.map((frame, i) => (
-        <figure
-          key={i}
-          className="darkroom-fallback-frame"
-          style={{
-            left: frame.x,
-            top: frame.y,
-            transform: `rotate(${frame.rotate}deg)`,
-          }}
-        >
-          <img src={frame.src} alt="" loading="lazy" decoding="async" />
-        </figure>
-      ))}
+      {FRAMES.map((item, i) => {
+        const layout = FRAME_LAYOUT[i] ?? FRAME_LAYOUT[0];
+        return (
+          <figure
+            key={item.id}
+            className="darkroom-fallback-frame"
+            style={{
+              left: layout.x,
+              top: layout.y,
+              transform: `rotate(${layout.rotate}deg)`,
+            }}
+          >
+            <img src={item.src} alt={item.title} loading="lazy" decoding="async" />
+          </figure>
+        );
+      })}
     </div>
   );
 }

@@ -4,14 +4,19 @@ import { Float, Sparkles, PerspectiveCamera } from '@react-three/drei';
 import * as THREE from 'three';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-import heroImg from '../assets/hero.jpg';
-import weddingImg from '../assets/wedding.jpg';
-import galleryPortrait from '../assets/gallery_portrait.png';
-import galleryWedding from '../assets/gallery_wedding.png';
-import galleryEvent from '../assets/gallery_event.png';
+import { PORTFOLIO_ITEMS } from '../data/portfolio';
 
 gsap.registerPlugin(ScrollTrigger);
+
+const DARKROOM_IMAGES = [
+  PORTFOLIO_ITEMS.find((i) => i.id === 'wedding-couple-embrace-forest-portrait'),
+  PORTFOLIO_ITEMS.find((i) => i.id === 'portrait-woman-colorful-dress-full-length'),
+  PORTFOLIO_ITEMS.find((i) => i.id === 'wedding-ceremony-outdoor-arch-officiant'),
+  PORTFOLIO_ITEMS.find((i) => i.id === 'school-panorama-students-staff-assembly'),
+  PORTFOLIO_ITEMS.find((i) => i.id === 'studio-portrait-couple-elegant-headshot'),
+  PORTFOLIO_ITEMS.find((i) => i.id === 'wedding-reception-first-dance'),
+  PORTFOLIO_ITEMS.find((i) => i.id === 'portrait-man-traditional-kaftan-headshot'),
+].filter(Boolean) as typeof PORTFOLIO_ITEMS;
 
 function GlassPane({
   url,
@@ -74,9 +79,7 @@ function CameraRig({ isMobile }: { isMobile: boolean }) {
     tl.to(g.rotation, { y: -0.08, duration: 6, ease: 'power1.inOut' }, 2);
     tl.to(g.rotation, { y: 0.06, duration: 6, ease: 'power1.inOut' }, 8);
 
-    return () => {
-      tl.kill();
-    };
+    return () => { tl.kill(); };
   }, []);
 
   return (
@@ -90,6 +93,7 @@ function DarkroomScene() {
   const { size } = useThree();
   const isMobile = size.width < 768;
   const xs = isMobile ? 0.5 : 1;
+  const panes = DARKROOM_IMAGES;
 
   return (
     <>
@@ -111,13 +115,13 @@ function DarkroomScene() {
         color="#c8a882"
       />
 
-      <GlassPane url={heroImg} position={[-2.8 * xs, 0.8, 0]} rotation={[0, 0.3, 0]} width={2.8} height={1.9} />
-      <GlassPane url={galleryPortrait} position={[2.2 * xs, 1.1, 2.5]} rotation={[0, -0.25, 0]} width={1.7} height={2.3} />
-      <GlassPane url={weddingImg} position={[-1.8 * xs, 0.6, 5.5]} rotation={[0, 0.15, 0]} width={2.4} height={1.6} />
-      <GlassPane url={galleryEvent} position={[3 * xs, 0.9, 8]} rotation={[0, -0.35, 0]} width={2.5} height={1.7} />
-      <GlassPane url={galleryWedding} position={[-2.5 * xs, 1.0, 10.5]} rotation={[0, 0.2, 0]} width={2.0} height={2.6} />
-      <GlassPane url={heroImg} position={[1.8 * xs, 0.7, 13.5]} rotation={[0, -0.15, 0]} width={2.8} height={1.9} />
-      <GlassPane url={galleryPortrait} position={[-1.5 * xs, 1.2, 16]} rotation={[0, 0.28, 0]} width={1.8} height={2.4} />
+      {panes[0] && <GlassPane url={panes[0].src} position={[-2.8 * xs, 0.8, 0]} rotation={[0, 0.3, 0]} width={2.8} height={1.9} />}
+      {panes[1] && <GlassPane url={panes[1].src} position={[2.2 * xs, 1.1, 2.5]} rotation={[0, -0.25, 0]} width={1.7} height={2.3} />}
+      {panes[2] && <GlassPane url={panes[2].src} position={[-1.8 * xs, 0.6, 5.5]} rotation={[0, 0.15, 0]} width={2.4} height={1.6} />}
+      {panes[3] && <GlassPane url={panes[3].src} position={[3 * xs, 0.9, 8]} rotation={[0, -0.35, 0]} width={2.5} height={1.7} />}
+      {panes[4] && <GlassPane url={panes[4].src} position={[-2.5 * xs, 1.0, 10.5]} rotation={[0, 0.2, 0]} width={2.0} height={2.6} />}
+      {panes[5] && <GlassPane url={panes[5].src} position={[1.8 * xs, 0.7, 13.5]} rotation={[0, -0.15, 0]} width={2.8} height={1.9} />}
+      {panes[6] && <GlassPane url={panes[6].src} position={[-1.5 * xs, 1.2, 16]} rotation={[0, 0.28, 0]} width={1.8} height={2.4} />}
 
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 6]}>
         <planeGeometry args={[40, 40]} />

@@ -1,90 +1,32 @@
 import { useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowUpRight } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { isReducedPerformance } from '../lib/performance';
-import heroImg from '../assets/hero.jpg';
-import weddingImg from '../assets/wedding.jpg';
-import galleryPortrait from '../assets/gallery_portrait.png';
-import galleryWedding from '../assets/gallery_wedding.png';
-import galleryEvent from '../assets/gallery_event.png';
+import {
+  distributeIntoColumns,
+  getCategoryLabel,
+  getFeaturedItems,
+} from '../data/portfolio';
 
 gsap.registerPlugin(ScrollTrigger);
 
-/*
- * `depth` controls the starting blur (in px).
- * All columns begin blurred and rack-focus into clarity
- * as you scroll through. The deeper the depth, the later
- * they come into focus — like a real lens pulling focus
- * across planes.
- *
- * Blur values are kept subtle (max ~1.8px).
- */
-const columns = [
-  {
-    speed: -120,
-    offset: 60,
-    images: [
-      { src: heroImg, label: 'Golden Hour', cat: 'Wedding' },
-      { src: galleryPortrait, label: 'Grace', cat: 'Portrait' },
-      { src: weddingImg, label: 'Eternal', cat: 'Ceremony' },
-      { src: galleryEvent, label: 'Jubilee', cat: 'Event' },
-    ],
-  },
-  {
-    speed: 180,
-    offset: -100,
-    images: [
-      { src: galleryWedding, label: 'Timeless Vows', cat: 'Wedding' },
-      { src: heroImg, label: 'Radiance', cat: 'Editorial' },
-      { src: galleryPortrait, label: 'Elegance', cat: 'Studio' },
-      { src: galleryEvent, label: 'Festivity', cat: 'Event' },
-      { src: weddingImg, label: 'Promise', cat: 'Ceremony' },
-    ],
-  },
-  {
-    speed: -80,
-    offset: 30,
-    images: [
-      { src: galleryEvent, label: 'Celebration', cat: 'Reception' },
-      { src: weddingImg, label: 'Heritage', cat: 'Documentary' },
-      { src: galleryWedding, label: 'Forever', cat: 'Wedding' },
-      { src: heroImg, label: 'Luminance', cat: 'Portrait' },
-    ],
-  },
-  {
-    speed: 140,
-    offset: -70,
-    images: [
-      { src: galleryPortrait, label: 'Serenity', cat: 'Studio' },
-      { src: galleryEvent, label: 'Joy', cat: 'Event' },
-      { src: heroImg, label: 'Bloom', cat: 'Editorial' },
-      { src: galleryWedding, label: 'Devotion', cat: 'Wedding' },
-      { src: weddingImg, label: 'Tender', cat: 'Ceremony' },
-    ],
-  },
-  {
-    speed: -160,
-    offset: 90,
-    images: [
-      { src: weddingImg, label: 'Reverie', cat: 'Documentary' },
-      { src: galleryPortrait, label: 'Poise', cat: 'Portrait' },
-      { src: galleryEvent, label: 'Euphoria', cat: 'Reception' },
-      { src: heroImg, label: 'Aura', cat: 'Editorial' },
-    ],
-  },
-  {
-    speed: 100,
-    offset: -40,
-    images: [
-      { src: galleryWedding, label: 'Unity', cat: 'Wedding' },
-      { src: heroImg, label: 'Dusk', cat: 'Landscape' },
-      { src: weddingImg, label: 'Bliss', cat: 'Ceremony' },
-      { src: galleryPortrait, label: 'Muse', cat: 'Studio' },
-    ],
-  },
+const COLUMN_CONFIG = [
+  { speed: -120, offset: 60 },
+  { speed: 180, offset: -100 },
+  { speed: -80, offset: 30 },
+  { speed: 140, offset: -70 },
+  { speed: -160, offset: 90 },
+  { speed: 100, offset: -40 },
 ];
 
-/* Bokeh circle data — decorative blurred light spots */
+const featuredItems = getFeaturedItems();
+const columns = distributeIntoColumns(featuredItems, 6).map((images, i) => ({
+  ...COLUMN_CONFIG[i],
+  images,
+}));
+
 const bokehCircles = [
   { x: '8%',  y: '15%', size: 90,  opacity: 0.18, color: 'rgba(200, 168, 130, 0.5)', speed: -60 },
   { x: '75%', y: '25%', size: 130, opacity: 0.12, color: 'rgba(245, 240, 235, 0.6)', speed: 80 },
@@ -107,12 +49,9 @@ export default function PortfolioGrid() {
     if (!section) return;
 
     const ctx = gsap.context(() => {
-      // ── Column parallax ──
       columnRefs.current.forEach((col, i) => {
         if (!col) return;
         const data = columns[i];
-
-        // Parallax movement
         gsap.to(col, {
           y: data.speed,
           ease: 'none',
@@ -125,7 +64,6 @@ export default function PortfolioGrid() {
         });
       });
 
-      // ── Image fade-in ──
       const imgs = gsap.utils.toArray<HTMLElement>('.parallax-col-item');
       imgs.forEach((img) => {
         gsap.fromTo(img,
@@ -145,7 +83,6 @@ export default function PortfolioGrid() {
         );
       });
 
-      // ── Cloud / fog layers parallax ──
       if (!reduced) {
         const fogSpeeds = [-200, 150, -300, 250, -180];
         fogRefs.current.forEach((fog, i) => {
@@ -176,7 +113,6 @@ export default function PortfolioGrid() {
           });
         });
       }
-
     }, section);
 
     return () => { ctx.revert(); };
@@ -184,13 +120,14 @@ export default function PortfolioGrid() {
 
   return (
     <section id="portfolio" className="parallax-portfolio" ref={sectionRef}>
-      {/* Section header */}
       <div className="parallax-portfolio-header">
         <span className="parallax-portfolio-label">Portfolio</span>
         <h2>Selected <em>Work</em></h2>
+        <Link to="/portfolio" className="parallax-portfolio-link">
+          View all categories <ArrowUpRight size={16} />
+        </Link>
       </div>
 
-      {/* ── Cloud / fog layers ── */}
       {!reduced && (
         <>
           <div className="parallax-fog-container">
@@ -223,31 +160,27 @@ export default function PortfolioGrid() {
         </>
       )}
 
-      {/* Top/bottom fog edges */}
       <div className="parallax-fog-edge parallax-fog-edge--top" />
       <div className="parallax-fog-edge parallax-fog-edge--bottom" />
 
-      {/* Multi-column parallax grid */}
       <div className="parallax-columns-wrap">
         {columns.map((col, colIdx) => (
           <div
             key={colIdx}
-            className={`parallax-col`}
+            className="parallax-col"
             ref={(el) => { columnRefs.current[colIdx] = el; }}
-            style={{
-              transform: `translateY(${col.offset}px)`,
-            }}
+            style={{ transform: `translateY(${col.offset}px)` }}
           >
-            {col.images.map((img, imgIdx) => (
-              <div key={imgIdx} className="parallax-col-item">
+            {col.images.map((item) => (
+              <Link key={item.id} to="/portfolio" className="parallax-col-item">
                 <div className="parallax-col-img">
-                  <img src={img.src} alt={img.label} loading="lazy" />
+                  <img src={item.src} alt={item.title} loading="lazy" decoding="async" />
                 </div>
                 <div className="parallax-col-overlay">
-                  <span className="parallax-col-cat">{img.cat}</span>
-                  <span className="parallax-col-name">{img.label}</span>
+                  <span className="parallax-col-cat">{getCategoryLabel(item.category)}</span>
+                  <span className="parallax-col-name">{item.title}</span>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         ))}

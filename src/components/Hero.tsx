@@ -1,16 +1,14 @@
-import { useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { isReducedPerformance, prefersFinePointer } from '../lib/performance';
-
-import img1 from '../assets/hero.jpg';
-import img2 from '../assets/gallery_portrait.png';
-import img3 from '../assets/wedding.jpg';
-import img4 from '../assets/gallery_wedding.png';
+import { getHeroImages } from '../data/portfolio';
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Hero() {
+  const heroImages = useMemo(() => getHeroImages(), []);
   const sectionRef = useRef<HTMLElement | null>(null);
   const titleRef = useRef<HTMLHeadingElement | null>(null);
   const metaRef = useRef<HTMLDivElement | null>(null);
@@ -205,19 +203,20 @@ export default function Hero() {
             Based in Canada. Available for international commissions. 
             Blending editorial precision with raw human emotion.
           </p>
-          <button className="hero-button" onClick={() => {
-            document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-          }}>
+          <Link to="/contact" className="hero-button">
             Secure your date
-          </button>
+          </Link>
         </div>
       </div>
 
       <div className="hero-right">
         <div className="hero-stack-container">
-          {[img1, img2, img3, img4].map((src, i) => (
+          {[0, 1, 2, 3].map((i) => {
+            const item = heroImages[i];
+            if (!item) return null;
+            return (
             <div
-              key={i}
+              key={item.id}
               className={`hero-card hero-card--${i + 1}`}
               ref={(el) => { cardRefs.current[i] = el; }}
             >
@@ -229,11 +228,12 @@ export default function Hero() {
                   className="hero-card-inner"
                   ref={(el) => { innerRefs.current[i] = el; }}
                 >
-                  <img src={src} alt={`Editorial ${i + 1}`} />
+                  <img src={item.src} alt={item.title} />
                 </div>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 

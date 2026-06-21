@@ -1,16 +1,16 @@
-import { StrictMode, Suspense, lazy } from 'react';
+import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
 import { initPerformanceProfile } from './lib/performance';
+import App from './App';
 import './index.css';
 
 initPerformanceProfile();
 
-const App = lazy(() => import('./App.tsx'));
-
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <Suspense fallback={null}>
+    <BrowserRouter>
       <App />
-    </Suspense>
+    </BrowserRouter>
   </StrictMode>,
 );

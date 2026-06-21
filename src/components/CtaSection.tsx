@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -28,9 +29,9 @@ export default function CtaSection() {
         a high-profile event, or a destination wedding, we are ready to travel 
         to you. Elevate your narrative with a global perspective.
       </p>
-      <button className="cta-button" onClick={() => window.location.href = 'mailto:hello@onestopphotography.org'}>
+      <Link to="/contact" className="cta-button">
         Check Availability <ArrowRight size={16} />
-      </button>
+      </Link>
       <div style={{ marginTop: '4rem', display: 'flex', justifyContent: 'center', gap: '2rem' }}>
         <div style={{ textAlign: 'left' }}>
           <div style={{ fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.4em', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Email</div>

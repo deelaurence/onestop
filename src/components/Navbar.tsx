@@ -1,24 +1,63 @@
 import { useState } from 'react';
+import { Link, NavLink } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import logo from '../assets/logo.png';
+
+const links = [
+  { to: '/portfolio', label: 'Portfolio' },
+  { to: '/about', label: 'About' },
+  { to: '/contact', label: 'Contact' },
+];
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
 
+  const closeMenu = () => setOpen(false);
+
   return (
     <nav className="navbar">
-      <div className="navbar-logo">
+      <Link to="/" className="navbar-logo" onClick={closeMenu}>
         <img src={logo} alt="Onestop" />
         <span>Onestop</span>
-      </div>
+      </Link>
+
       <ul className="navbar-links">
-        <li><a href="#portfolio">Portfolio</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#contact">Contact</a></li>
+        {links.map((link) => (
+          <li key={link.to}>
+            <NavLink
+              to={link.to}
+              className={({ isActive }) => (isActive ? 'active' : undefined)}
+            >
+              {link.label}
+            </NavLink>
+          </li>
+        ))}
       </ul>
-      <button className="navbar-menu-btn" onClick={() => setOpen(!open)}>
+
+      <button
+        type="button"
+        className="navbar-menu-btn"
+        onClick={() => setOpen(!open)}
+        aria-label={open ? 'Close menu' : 'Open menu'}
+      >
         {open ? <X size={22} /> : <Menu size={22} />}
       </button>
+
+      <div className={`navbar-mobile${open ? ' navbar-mobile--open' : ''}`}>
+        <ul>
+          {links.map((link) => (
+            <li key={link.to}>
+              <NavLink
+                to={link.to}
+                className={({ isActive }) => (isActive ? 'active' : undefined)}
+                onClick={closeMenu}
+              >
+                {link.label}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
+      </div>
     </nav>
   );
 }

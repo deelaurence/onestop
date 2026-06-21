@@ -1,11 +1,19 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import weddingImg from '../assets/wedding.jpg';
+import { PORTFOLIO_ITEMS } from '../data/portfolio';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function About() {
+const aboutImage =
+  PORTFOLIO_ITEMS.find((item) => item.id === 'wedding-couple-embrace-forest-portrait') ??
+  PORTFOLIO_ITEMS[0];
+
+interface AboutProps {
+  standalone?: boolean;
+}
+
+export default function About({ standalone = false }: AboutProps) {
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -26,10 +34,20 @@ export default function About() {
         scrollTrigger: { trigger: el, start: 'top 70%' },
       }
     );
+
+    return () => {
+      ScrollTrigger.getAll().forEach((t) => {
+        if (t.trigger === el) t.kill();
+      });
+    };
   }, []);
 
   return (
-    <section id="about" className="about-section" ref={sectionRef}>
+    <section
+      id={standalone ? undefined : 'about'}
+      className={`about-section${standalone ? ' about-section--standalone' : ''}`}
+      ref={sectionRef}
+    >
       <div className="about-inner">
         <div className="about-content">
           <div className="about-label">The Vision</div>
@@ -37,14 +55,14 @@ export default function About() {
             Artistry without <em>Boundaries</em>.
           </h2>
           <p className="about-text">
-            Based in the heart of Canada, Onestop Photography is a premier creative studio 
-            dedicated to capturing life's most profound narratives. We don't just document 
-            events; we craft visual legacies. 
+            Based in the heart of Canada, Onestop Photography is a premier creative studio
+            dedicated to capturing life's most profound narratives. We don't just document
+            events; we craft visual legacies.
             <br /><br />
-            From high-fashion editorial in Paris to intimate weddings in the Canadian Rockies, 
-            our lens spans a vast range of genres including commercial, portraiture, 
-            and documentary. We are world-travelers at heart, driven by the belief that 
-            every culture and every moment deserves to be seen through a lens of 
+            From high-fashion editorial in Paris to intimate weddings in the Canadian Rockies,
+            our lens spans a vast range of genres including commercial, portraiture,
+            and documentary. We are world-travelers at heart, driven by the belief that
+            every culture and every moment deserves to be seen through a lens of
             sophistication and raw honesty.
           </p>
           <div className="about-stats">
@@ -63,7 +81,7 @@ export default function About() {
           </div>
         </div>
         <div className="about-image">
-          <img src={weddingImg} alt="About Onestop" />
+          <img src={aboutImage.src} alt={aboutImage.title} loading="lazy" decoding="async" />
         </div>
       </div>
     </section>
