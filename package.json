@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "convert:webp": "node scripts/convert-to-webp.mjs"
+    "convert:webp": "node scripts/convert-to-webp.mjs",
+    "optimize:assets": "node scripts/optimize-assets.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
