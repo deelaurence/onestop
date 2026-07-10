@@ -13,6 +13,7 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 const PORT = Number(process.env.PORT) || 3001;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/onestop';
 const isProduction = process.env.NODE_ENV === 'production';
+const serveFrontend = process.env.SERVE_FRONTEND === 'true';
 
 const app = express();
 
@@ -25,6 +26,20 @@ app.get('/api/health', (_req, res) => {
 
 app.use('/api/availability', availabilityRoutes);
 app.use('/api/bookings', bookingRoutes);
+
+app.use('/api/*', (_req, res) => {
+  res.status(404).json({ error: 'Not found' });
+});
+
+if (!serveFrontend) {
+  app.get('/', (_req, res) => {
+    res.json({
+      name: 'Onestop API',
+      status: 'ok',
+      health: '/api/health',
+    });
+  });
+}
 
 function resolveFrontendDist(): string {
   const candidates = [
@@ -43,10 +58,14 @@ function resolveFrontendDist(): string {
   return path.resolve(__dirname, '../public');
 }
 
-if (isProduction) {
+if (isProduction && serveFrontend) {
   const distPath = resolveFrontendDist();
   app.use(express.static(distPath));
-  app.get('*', (_req, res) => {
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) {
+      next();
+      return;
+    }
     res.sendFile(path.join(distPath, 'index.html'));
   });
 }
@@ -55,7 +74,8 @@ async function start() {
   await connectDB(MONGODB_URI);
   app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
-    if (isProduction) console.log('Serving frontend from dist/');
+    if (isProduction && serveFrontend) console.log('Serving frontend from public/');
+    if (isProduction && !serveFrontend) console.log('API-only mode');
   });
 }
 
