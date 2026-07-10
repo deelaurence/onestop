@@ -2309,6 +2309,7 @@
 /* ── Booking Page ── */
 
 .standalone-page--book {
+  --wizard-sticky-top: calc(5.5rem + env(safe-area-inset-top, 0px));
   max-width: 1100px;
   margin: 0 auto;
   padding: 2rem 2rem 6rem;
@@ -2696,6 +2697,7 @@
 
 @media (max-width: 768px) {
   .standalone-page--book {
+    --wizard-sticky-top: calc(4.75rem + env(safe-area-inset-top, 0px));
     padding-left: 1.25rem;
     padding-right: 1.25rem;
   }
@@ -2717,7 +2719,7 @@
 
 .wizard-steps {
   position: sticky;
-  top: 15.95rem;
+  top: var(--wizard-sticky-top, 5.5rem);
   z-index: 50;
   display: flex;
   justify-content: space-between;
@@ -2740,14 +2742,20 @@
   bottom: 0;
   background: var(--cream);
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 6px 16px rgba(26, 23, 20, 0.04);
   z-index: -1;
+}
+
+@media (min-width: 1200px) {
+  .wizard-steps {
+    max-width: 720px;
+  }
 }
 
 .wizard-step {
   flex: 1;
   text-align: center;
   opacity: 0.4;
-  margin-top: 1rem;
 }
 
 .wizard-step-btn {
@@ -2826,6 +2834,7 @@
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.75);
   border: 1px solid rgba(0, 0, 0, 0.06);
+  scroll-margin-top: calc(var(--wizard-sticky-top, 5.5rem) + 4.5rem);
 }
 
 .wizard-panel-body {
@@ -3488,7 +3497,6 @@
 
 @media (max-width: 768px) {
   .wizard-steps {
-    top: 5rem;
     padding: 0.65rem 0 1rem;
   }
   .wizard-steps small { display: none; }
