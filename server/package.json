@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js"
+    "build": "npm run build:web && npm run copy:web && tsc",
+    "build:web": "npm ci --prefix .. && npm run build --prefix ..",
+    "copy:web": "rm -rf public && cp -r ../dist public",
+    "start": "NODE_ENV=production node dist/index.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
