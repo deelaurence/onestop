@@ -29,7 +29,7 @@ export default function CtaSection() {
         a high-profile event, or a destination wedding, we are ready to travel 
         to you. Elevate your narrative with a global perspective.
       </p>
-      <Link to="/contact" className="cta-button">
+      <Link to="/book" className="cta-button">
         Check Availability <ArrowRight size={16} />
       </Link>
       <div style={{ marginTop: '4rem', display: 'flex', justifyContent: 'center', gap: '2rem' }}>

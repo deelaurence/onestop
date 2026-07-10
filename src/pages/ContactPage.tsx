@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowRight, Mail, Phone, MapPin } from 'lucide-react';
 
 export default function ContactPage() {
@@ -38,9 +39,9 @@ export default function ContactPage() {
       <div className="contact-cta-block">
         <h2>Ready to book your session?</h2>
         <p>Share your date, location, and vision. We'll confirm availability and next steps.</p>
-        <a href="mailto:hello@onestopphotography.org" className="cta-button contact-cta-button">
+        <Link to="/book" className="cta-button contact-cta-button">
           Check Availability <ArrowRight size={16} />
-        </a>
+        </Link>
       </div>
     </section>
   );

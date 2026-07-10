@@ -10,6 +10,7 @@ import HomePage from './pages/HomePage';
 import PortfolioPage from './pages/PortfolioPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
+import BookPage from './pages/BookPage';
 
 export default function App() {
   const [ready, setReady] = useState(false);
@@ -26,6 +27,7 @@ export default function App() {
           <Route path="/portfolio" element={<PortfolioPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/book" element={<BookPage />} />
         </Route>
       </Routes>
     </>
