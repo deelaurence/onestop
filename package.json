@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:server": "npm run dev --prefix server",
     "build": "tsc -b && vite build",
+    "start": "npm run build && npm run build --prefix server && NODE_ENV=production npm run start --prefix server",
     "lint": "eslint .",
     "preview": "vite preview",
     "convert:webp": "node scripts/convert-to-webp.mjs",
