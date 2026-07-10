@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
 
 import { isReducedPerformance, prefersFinePointer } from './lib/performance';
@@ -11,17 +11,23 @@ import PortfolioPage from './pages/PortfolioPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import BookPage from './pages/BookPage';
+import AdminLoginPage from './pages/admin/AdminLoginPage';
+import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 
 export default function App() {
-  const [ready, setReady] = useState(false);
+  const location = useLocation();
+  const isHome = location.pathname === '/';
+  const [ready, setReady] = useState(!isHome);
   const reduced = isReducedPerformance();
   const showCursor = prefersFinePointer() && !reduced;
 
   return (
     <>
-      {!ready && <Preloader onDone={() => setReady(true)} />}
+      {isHome && !ready && <Preloader onDone={() => setReady(true)} />}
       {showCursor && <CustomCursor />}
       <Routes>
+        <Route path="/admin/login" element={<AdminLoginPage />} />
+        <Route path="/admin" element={<AdminDashboardPage />} />
         <Route element={<SiteLayout />}>
           <Route path="/" element={<HomePage ready={ready} />} />
           <Route path="/portfolio" element={<PortfolioPage />} />

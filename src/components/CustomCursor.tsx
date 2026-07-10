@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 
 export default function CustomCursor() {
+  const location = useLocation();
   const dot = useRef<HTMLDivElement>(null);
   const ring = useRef<HTMLDivElement>(null);
   const target = useRef({ x: 0, y: 0 });
@@ -44,24 +46,31 @@ export default function CustomCursor() {
       ringEl.classList.remove('hovering');
     };
 
-    window.addEventListener('mousemove', onMove, { passive: true });
+    const onPointerOver = (e: Event) => {
+      const el = e.target as Element | null;
+      if (el?.closest('a, button, .portfolio-item')) onEnter();
+    };
 
-    const interactives = document.querySelectorAll('a, button, .portfolio-item');
-    interactives.forEach((el) => {
-      el.addEventListener('mouseenter', onEnter);
-      el.addEventListener('mouseleave', onLeave);
-    });
+    const onPointerOut = (e: Event) => {
+      const el = e.target as Element | null;
+      const related = (e as MouseEvent).relatedTarget as Element | null;
+      if (el?.closest('a, button, .portfolio-item') && !related?.closest('a, button, .portfolio-item')) {
+        onLeave();
+      }
+    };
+
+    window.addEventListener('mousemove', onMove, { passive: true });
+    document.addEventListener('mouseover', onPointerOver, { passive: true });
+    document.addEventListener('mouseout', onPointerOut, { passive: true });
 
     return () => {
       running = false;
       cancelAnimationFrame(rafId.current);
       window.removeEventListener('mousemove', onMove);
-      interactives.forEach((el) => {
-        el.removeEventListener('mouseenter', onEnter);
-        el.removeEventListener('mouseleave', onLeave);
-      });
+      document.removeEventListener('mouseover', onPointerOver);
+      document.removeEventListener('mouseout', onPointerOut);
     };
-  }, []);
+  }, [location.pathname]);
 
   return (
     <>

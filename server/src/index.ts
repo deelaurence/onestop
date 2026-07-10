@@ -7,6 +7,8 @@ import cors from 'cors';
 import { connectDB } from './config/db.js';
 import availabilityRoutes from './routes/availability.js';
 import bookingRoutes from './routes/bookings.js';
+import adminRoutes from './routes/admin.js';
+import { seedDatabase } from './services/seed.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
@@ -26,6 +28,7 @@ app.get('/api/health', (_req, res) => {
 
 app.use('/api/availability', availabilityRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/api/admin', adminRoutes);
 
 app.use('/api/*', (_req, res) => {
   res.status(404).json({ error: 'Not found' });
@@ -72,6 +75,7 @@ if (isProduction && serveFrontend) {
 
 async function start() {
   await connectDB(MONGODB_URI);
+  await seedDatabase();
   app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
     if (isProduction && serveFrontend) console.log('Serving frontend from public/');

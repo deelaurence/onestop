@@ -2,13 +2,6 @@
   command = "npm run build"
   publish = "dist"
 
-# Proxy API requests to the Render backend
-[[redirects]]
-  from = "/api/*"
-  to = "https://onestop-x8qg.onrender.com/api/:splat"
-  status = 200
-  force = true
-
 # SPA fallback — let React Router handle /portfolio, /about, /contact, etc.
 [[redirects]]
   from = "/*"
