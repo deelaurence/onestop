@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import path from 'node:path';
+import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
 import cors from 'cors';
@@ -25,8 +26,25 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/availability', availabilityRoutes);
 app.use('/api/bookings', bookingRoutes);
 
+function resolveFrontendDist(): string {
+  const candidates = [
+    path.resolve(__dirname, '../public'),
+    path.resolve(__dirname, '../../dist'),
+    path.resolve(process.cwd(), 'public'),
+    path.resolve(process.cwd(), '../dist'),
+  ];
+
+  for (const candidate of candidates) {
+    if (existsSync(path.join(candidate, 'index.html'))) {
+      return candidate;
+    }
+  }
+
+  return path.resolve(__dirname, '../public');
+}
+
 if (isProduction) {
-  const distPath = path.resolve(__dirname, '../../dist');
+  const distPath = resolveFrontendDist();
   app.use(express.static(distPath));
   app.get('*', (_req, res) => {
     res.sendFile(path.join(distPath, 'index.html'));
